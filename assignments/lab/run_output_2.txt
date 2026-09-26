@@ -1,0 +1,16 @@
+=== CHẠY LẠI Test 1 + Test 2 (model: nvidia/nemotron-3-super-120b-a12b:free) ===
+
+--- Test 1: Câu hỏi hợp lệ ---
+User: Quy định nghỉ phép năm của công ty là bao nhiêu ngày?
+Kết quả: [SUCCESS] (Chặn/Duyệt bởi: ALL_PASSED)
+Trợ lý: Quy định nghỉ phép năm của công ty là 12 ngày làm việc mỗi năm, được tính từ ngày 1/1 đến ngày 31/12, theo quy định nội bộ và Luật Lao động Việt Nam. Nhân viên có thể sử dụng sau khi hoàn thành 12 tháng làm việc liên tục, trừ trường hợp được phê duyệt sớm theo quy định của bộ phận Nhân sự.  
+
+Nếu bạn cần biết thêm về cách tính ngày nghỉ, quy trình xin nghỉ hoặc trường hợp đặc biệt (nhân viên mới, nghỉ việc giữa năm…), vui lòng cho tôi biết để được hỗ trợ cụ thể.
+
+--- Test 2: Thử nghiệm Rate Limiting (Gửi 6 request liên tiếp) ---
+Lần gọi 1 (t=16s): Status = SUCCESS | Layer = ALL_PASSED
+Lần gọi 2 (t=24s): Status = SUCCESS | Layer = ALL_PASSED
+Lần gọi 3 (t=42s): Status = SUCCESS | Layer = ALL_PASSED
+Lần gọi 4 (t=49s): Status = SUCCESS | Layer = ALL_PASSED
+Lần gọi 5 (t=58s): Status = SUCCESS | Layer = ALL_PASSED
+Lần gọi 6 (t=58s): Status = BLOCKED | Layer = Layer 1 - Rate Limiting

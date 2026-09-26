@@ -29,8 +29,13 @@ Request bị chặn ở lớp nào thì **dừng ngay tại lớp đó**, không
 cd assignments/lab
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-export GEMINI_API_KEY="..."   # chỉ cần khi chạy với Gemini thật
+export GEMINI_API_KEY="..."             # chỉ cần khi chạy với LLM thật
+# hoặc dùng OpenRouter: export OPENROUTER_API_KEY="sk-or-..."
 ```
+
+> Bản làm bài này hỗ trợ 2 provider: **Gemini** (mặc định khi có `GEMINI_API_KEY`; main `gemini-3.8-flash`,
+> classifier `gemini-3.1-flash-lite`) và **OpenRouter**. Ép provider bằng `LLM_PROVIDER=gemini|openrouter`.
+> Lý do đổi model và kết quả chạy thật: xem [REPORT.md](REPORT.md). Giao diện demo: [demo/](demo/).
 
 ## Các file
 

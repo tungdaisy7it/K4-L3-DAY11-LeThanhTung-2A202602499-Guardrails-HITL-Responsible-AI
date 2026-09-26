@@ -1,3 +1,4 @@
 # Python >= 3.9
-google-genai>=1.0.0
+google-genai>=1.0.0   # LLM_PROVIDER=gemini (GEMINI_API_KEY)
+openai>=1.0.0         # LLM_PROVIDER=openrouter (OPENROUTER_API_KEY)
 pytest>=7.0

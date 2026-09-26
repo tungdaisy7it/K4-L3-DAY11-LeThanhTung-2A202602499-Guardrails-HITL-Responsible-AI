@@ -1,0 +1,5 @@
+# Demo UI (ngoài requirements.txt của lab)
+fastapi>=0.110
+uvicorn>=0.29
+google-genai>=1.0.0
+openai>=1.0.0

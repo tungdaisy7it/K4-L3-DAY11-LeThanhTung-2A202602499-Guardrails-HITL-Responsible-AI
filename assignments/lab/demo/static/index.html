@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Guardrails Console</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236366f1' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+      <div>
+        <h1>Guardrails Console</h1>
+        <p>HR Assistant · Defense-in-depth · 5 lớp bảo vệ</p>
+      </div>
+    </div>
+    <div class="topbar-meta">
+      <span class="chip" title="Main LLM"><span class="chip-label">Main</span><span id="main-model">…</span></span>
+      <span class="chip" title="Classifier Lớp 3 & 4"><span class="chip-label">Guard</span><span id="guard-model">…</span></span>
+      <span class="chip" id="key-status"><span class="dot"></span><span>API key</span></span>
+      <span class="chip" id="quota" title="Số request free còn lại trong ngày của key OpenRouter"><span class="chip-label">Quota</span><span id="quota-text">…</span></span>
+      <button class="icon-btn" id="theme-toggle" title="Đổi giao diện sáng/tối" aria-label="Đổi giao diện sáng/tối">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <!-- ============ CHAT ============ -->
+    <section class="panel chat-panel" aria-label="Hội thoại">
+      <div class="panel-head">
+        <div class="user-field">
+          <label for="user-id">User ID</label>
+          <input id="user-id" value="demo_user" autocomplete="off" spellcheck="false">
+        </div>
+        <div class="rate">
+          <div class="rate-top">
+            <span>Rate limit</span>
+            <strong id="rate-text">0 / 5</strong>
+          </div>
+          <div class="meter"><div class="meter-fill" id="rate-fill"></div></div>
+        </div>
+        <button class="btn ghost sm" id="reset-rate" title="Xóa lịch sử rate limit của user này">Reset</button>
+      </div>
+
+      <div class="messages" id="messages" aria-live="polite">
+        <div class="empty" id="empty-state">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <h2>Gửi một câu hỏi để xem pipeline hoạt động</h2>
+          <p>Mỗi request đi qua Rate Limit → Input Validation → Injection Detection → Topic Filter → Main LLM → Output Guardrail và dừng ngay ở lớp đầu tiên chặn nó.</p>
+        </div>
+      </div>
+
+      <div class="scenarios">
+        <div class="scenario-head">
+          <span>Kịch bản mẫu</span>
+          <button class="btn ghost sm" id="flood-btn" title="Gửi 6 request liên tiếp để kích hoạt Lớp 1 (tốn tối đa 15 lần gọi LLM)">⚡ Flood × 6</button>
+        </div>
+        <div class="chips" id="scenario-chips"></div>
+      </div>
+
+      <form class="composer" id="composer">
+        <textarea id="prompt" rows="2" placeholder="Nhập câu hỏi hoặc prompt tấn công…  (Ctrl + Enter để gửi)"></textarea>
+        <div class="composer-bar">
+          <span class="counter" id="counter">0 / 2000</span>
+          <button class="btn primary" type="submit" id="send-btn">
+            Gửi
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <!-- ============ INSPECTOR ============ -->
+    <aside class="inspector">
+      <section class="panel">
+        <div class="panel-title">
+          <h3>Pipeline</h3>
+          <span class="muted" id="trace-caption">Chưa có request</span>
+        </div>
+        <ol class="pipeline" id="pipeline"></ol>
+        <div class="metrics">
+          <div class="metric"><span>Kết quả</span><strong id="m-status">—</strong></div>
+          <div class="metric"><span>Độ trễ</span><strong id="m-latency">—</strong></div>
+          <div class="metric"><span>Lần gọi LLM</span><strong id="m-calls">—</strong></div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-title">
+          <h3>Thống kê phiên</h3>
+          <button class="btn ghost sm" id="clear-stats">Xóa</button>
+        </div>
+        <div class="summary">
+          <div><strong id="s-total">0</strong><span>Tổng</span></div>
+          <div class="ok"><strong id="s-pass">0</strong><span>Thành công</span></div>
+          <div class="bad"><strong id="s-block">0</strong><span>Bị chặn</span></div>
+          <div class="warn"><strong id="s-llm">0</strong><span>Lần gọi LLM</span></div>
+        </div>
+        <ul class="bars" id="layer-bars"></ul>
+      </section>
+    </aside>
+  </main>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
